@@ -45,7 +45,7 @@ namespace Templates.Api.Controllers
 
                 };
                 await _templateRepository.InsertAsync(model);
-                return Ok(entity);
+                return Created("",entity);
             }
             else
             {

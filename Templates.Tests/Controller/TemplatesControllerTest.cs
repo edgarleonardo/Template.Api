@@ -21,7 +21,6 @@ namespace Templates.Tests.Controller
         public async Task Must_Create_Template_Object()
         {
             var templateRepositoryMock = new Mock<ITemplateRepository>();
-            var templateController = new TemplatesController(templateRepositoryMock.Object);
             var template = new TemplateViewModel
             {
                 TemplateBody = "Areva",
@@ -30,7 +29,10 @@ namespace Templates.Tests.Controller
                 TemplateVariables = "Templates Variables"
             };
 
+
             // Arrange
+            templateRepositoryMock.Setup(x => x.InsertAsync(It.IsAny<Template>())).Returns(Task.FromResult<TemplateViewModel>(template));
+            var templateController = new TemplatesController(templateRepositoryMock.Object);
 
             // Act
             var result = await templateController.Post(template);
