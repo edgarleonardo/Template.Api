@@ -7,11 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Templates.Api", "Templates.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Templates.Tests", "Templates.Tests\Templates.Tests.csproj", "{E4A8A4B1-FD18-414F-850A-564CFD6D35F6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Template", "Template", "{A1B2B18B-E211-4EDD-8779-35DEBA0BD67F}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\Downloads\diagram.jpg = ..\..\..\Downloads\diagram.jpg
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
