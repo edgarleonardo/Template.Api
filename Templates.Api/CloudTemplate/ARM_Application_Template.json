@@ -1,0 +1,167 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "BackendFarmNamePrefix": {
+      "type": "string",
+      "defaultValue": "backendsystem",
+      "minLength": 1
+    },
+    "BackendFarmSkuName": {
+      "type": "string",
+      "defaultValue": "S1",
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "metadata": {
+        "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+      }
+    },
+    "WebAppLocations": {
+      "type": "array",
+      "defaultValue": [ "West US", "West Europe" ]
+    },
+    "repositoryURL": {
+      "type": "string",
+      "defaultValue": "xxxxxxx"
+    },
+    "branch": {
+      "type": "string",
+      "defaultValue": "master"
+    }
+  },
+  "variables": {
+  
+  },
+  "resources": [
+    {
+      "name": "[concat(parameters('BackendFarmNamePrefix'), '-', uniqueString(resourceGroup().id))]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[parameters('WebAppLocations')[copyIndex()]]",
+      "copy": {
+        "count": "[length(parameters('WebAppLocations'))]",
+        "name": "WebSitesCopy"
+      },
+      "apiVersion": "2015-08-01",
+      "sku": {
+        "name": "[parameters('BackendFarmSkuName')]"
+      },
+      "dependsOn": [],
+      "tags": {
+        "displayName": "[concat(parameters('BackendFarmNamePrefix'),'-',copyIndex(),'-',uniqueString(resourceGroup().id))]"
+      },
+      "properties": {
+        "name": "[concat(parameters('BackendFarmNamePrefix'), '-', uniqueString(resourceGroup().id))]",
+        "numberOfWorkers": 1
+      }
+    },
+    {
+      "name": "[concat(parameters('BackendFarmNamePrefix'),'-site-',copyIndex(),'-',uniqueString(resourceGroup().id))]",
+      "type": "Microsoft.Web/sites",
+      "location": "[parameters('webAppLocations')[copyIndex()]]",
+      "apiVersion": "2015-08-01",
+      "copy": {
+        "count": "[length(parameters('webAppLocations'))]",
+        "name": "siteCopy"
+      },
+      "dependsOn": [
+        "farmCopy"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', concat(parameters('BackendFarmNamePrefix'),'-',copyIndex(),'-',uniqueString(resourceGroup().id))))]": "Resource",
+        "displayName": "[concat(parameters('BackendFarmNamePrefix'),'-site-',copyIndex(),'-',uniqueString(resourceGroup().id))]"
+      },
+      "properties": {
+        "name": "[concat(parameters('BackendFarmNamePrefix'),'-site-',copyIndex(),'-',uniqueString(resourceGroup().id))]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', concat(parameters('BackendFarmNamePrefix'),'-',copyIndex(),'-',uniqueString(resourceGroup().id)))]"
+      },
+      "resources": [
+        {
+          "name": "web",
+          "type": "sourcecontrols",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[concat(parameters('BackendFarmNamePrefix'),'-site-',copyIndex(),'-',uniqueString(resourceGroup().id))]"
+          ],
+          "properties": {
+            "RepoUrl": "[parameters('repositoryURL')]",
+            "branch": "[parameters('branch')]",
+            "IsManualIntegration": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "[concat(parameters('BackendFarmNamePrefix'),'-tm-',uniqueString(resourceGroup().id))]",
+      "type": "Microsoft.Network/trafficManagerProfiles",
+      "apiVersion": "2015-11-01",
+      "location": "global",
+      "dependsOn": [
+        "siteCopy"
+      ],
+      "properties": {
+        "profileStatus": "Enabled",
+        "trafficRoutingMethod": "Performance",
+        "dnsConfig": {
+          "relativeName": "[concat(parameters('BackendFarmNamePrefix'),'-TrafficManager-',uniqueString(resourceGroup().id))]",
+          "ttl": 30
+        },
+        "monitorConfig": {
+          "protocol": "HTTP",
+          "port": 80,
+          "path": "/"
+        },
+        "endpoints": [
+          {
+            "name": "[concat(parameters('BackendFarmNamePrefix'),'-endpoint-','0')]",
+            "type": "Microsoft.Network/trafficManagerProfiles/azureEndpoints",
+            "properties": {
+              "targetResourceId": "[resourceId('Microsoft.Web/sites/',concat(parameters('BackendFarmNamePrefix'),'-site-','0','-',uniqueString(resourceGroup().id)))]",
+              "endpointStatus": "Enabled"
+            }
+          },
+          {
+            "name": "[concat(parameters('BackendFarmNamePrefix'),'-endpoint-','1')]",
+            "type": "Microsoft.Network/trafficManagerProfiles/azureEndpoints",
+            "properties": {
+              "targetResourceId": "[resourceId('Microsoft.Web/sites/',concat(parameters('BackendFarmNamePrefix'),'-site-','1','-',uniqueString(resourceGroup().id)))]",
+              "endpointStatus": "Enabled"
+            }
+          },
+          {
+            "name": "[concat(parameters('BackendFarmNamePrefix'),'-endpoint-','2')]",
+            "type": "Microsoft.Network/trafficManagerProfiles/azureEndpoints",
+            "properties": {
+              "targetResourceId": "[resourceId('Microsoft.Web/sites/',concat(parameters('BackendFarmNamePrefix'),'-site-','2','-',uniqueString(resourceGroup().id)))]",
+              "endpointStatus": "Enabled"
+            }
+          },
+          {
+            "name": "[concat(parameters('BackendFarmNamePrefix'),'-endpoint-','3')]",
+            "type": "Microsoft.Network/trafficManagerProfiles/azureEndpoints",
+            "properties": {
+              "targetResourceId": "[resourceId('Microsoft.Web/sites/',concat(parameters('BackendFarmNamePrefix'),'-site-','3','-',uniqueString(resourceGroup().id)))]",
+              "endpointStatus": "Enabled"
+            }
+          }
+        ]
+      }
+    }
+
+  ],
+  "outputs": {
+    
+  }
+
+}
