@@ -3,7 +3,7 @@
 $resourceGroupLocation = 'West US'
 $resourceGroupName = 'backendSystem-paas'
 $resourceDeploymentName = 'backendSystem-paas-deployment'
-$templatePath = $env:SystemDrive + '\' + 'CloudTemplate'
+$templatePath =  '[Root_Url]\' + 'CloudTemplate'
 $templateFile = 'ARM_Application_Template.json'
 $template = $templatePath + '\' + $templateFile
 }
