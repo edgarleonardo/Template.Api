@@ -11,7 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.Swagger;
 using Templates.Api.Domain;
+using Templates.Api.Repository;
 
 namespace Templates.Api
 {
@@ -31,6 +33,12 @@ namespace Templates.Api
             services.AddDbContext<TemplatesDbContext>(
                 options => options.UseSqlServer(
                      Configuration.GetConnectionString("TemplateConnection")));
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Templates Example API", Version = "v1" });
+            });
+            /// Templates Repository
+            services.AddScoped<ITemplateRepository, TemplateRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +54,29 @@ namespace Templates.Api
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Templates Example API V1");
+            });
+
+            app.UseCors(policy =>
+            {
+                policy.WithOrigins("*");
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
+            });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }

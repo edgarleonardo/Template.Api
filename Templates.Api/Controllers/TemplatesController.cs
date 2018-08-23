@@ -18,9 +18,8 @@ namespace Templates.Api.Controllers
             _templateRepository = templateRepository;
         }
         //
-        // GET api/values
+        // GET api/templates
         [HttpGet]
-        [HttpGet("{controller]")]
         public Task<IActionResult> Get()
         {
             var template = _templateRepository.Query().Select(g => new TemplatesListModel (g.Id , g.TemplateName, g.TemplateDescription) );
@@ -29,8 +28,8 @@ namespace Templates.Api.Controllers
 
             return Task.FromResult<IActionResult>(Ok(template));
         }
-       
-        // POST api/values
+
+        // POST api/templates
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] TemplateViewModel entity)
         {
@@ -56,8 +55,8 @@ namespace Templates.Api.Controllers
             }
         }
 
-        // PUT api/values/5
-        [HttpPost("{controller]/{id}/render")]
+        // POST api/templates/5/render
+        [HttpPost("{id}/render")]
         public async Task<IActionResult> RenderTemplate(int id)
         {
             var template = await _templateRepository.GetAsync(id);
