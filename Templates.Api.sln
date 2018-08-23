@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Templates.Api", "Templates.Api\Templates.Api.csproj", "{E1D73F5C-0792-4305-A95E-78BCE637A7B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Templates.Api", "Templates.Api\Templates.Api.csproj", "{E1D73F5C-0792-4305-A95E-78BCE637A7B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Templates.Tests", "Templates.Tests\Templates.Tests.csproj", "{E4A8A4B1-FD18-414F-850A-564CFD6D35F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Templates.Tests", "Templates.Tests\Templates.Tests.csproj", "{E4A8A4B1-FD18-414F-850A-564CFD6D35F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Template", "Template", "{A1B2B18B-E211-4EDD-8779-35DEBA0BD67F}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Downloads\diagram.jpg = ..\..\..\Downloads\diagram.jpg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
